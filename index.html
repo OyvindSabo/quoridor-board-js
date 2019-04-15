@@ -7,20 +7,63 @@ const WALL_COLOR = 'AntiqueWhite';
 const BASE_COLOR = 'Black';
 const PLAYER_1_COLOR = 'White';
 const PLAYER_2_COLOR = 'Black';
-const cell = (piece = 0) => `<td style="background:Brown;color:${piece === 1 ? PLAYER_1_COLOR : PLAYER_2_COLOR};width:10%;height:10%;font-size:373%;text-align:center">${[1, 2].includes(piece) ? '♟' : '&nbsp;'}</td>`;
+const HIGHLIGHT_COLOR = 'Yellow';
+const SQUARE_COLOR = 'Brown';
+
+let BOARD_STATE = {
+  containerId: undefined,
+  quoridorGame: undefined,
+  highlightAvailableMoves: false,
+  availableMoves: [],
+  previousAvailableMoves: [],
+}
+
+const cell = (piece = 0, id) => `<td id="${id}" style="background:${SQUARE_COLOR};color:${piece === 1 ? PLAYER_1_COLOR : PLAYER_2_COLOR};width:10%;height:10%;font-size:373%;text-align:center" onclick="handleCellClick(id, ${piece})">${[1, 2].includes(piece) ? '♟' : '&nbsp;'}</td>`;
 const verticalCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:1%;height:10%">`;
 const horizontalCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:10%;height:1%">`;
 const miniCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:1%;height:1%">`;
 const row = content => `<tr>${content}</tr>`
+const moveToCellId = move => '' + move.x + move.y + (move.w ? move.w : '');
 
-const rowBetweenRows = content => `<tr>${content}</tr>`
+const hideAvailableMoves = () => {
+  BOARD_STATE.previousAvailableMoves.forEach(move => {
+    cellId = moveToCellId(move);
+    const cellElement = document.getElementById(cellId);
+    cellElement && (cellElement.style.background = (cellId.length === 3 ? BASE_COLOR : SQUARE_COLOR));
+  });
+};
+
+const updateAvailableMoves = () => {
+  BOARD_STATE.previousAvailableMoves = BOARD_STATE.availableMoves;
+  BOARD_STATE.availableMoves = BOARD_STATE.quoridorGame.generateMoves();
+};
+
+const showAvailableMoves = () => {
+  // Unhighlight previous available moves if any
+  hideAvailableMoves();
+
+  // Highlight new available moves
+  BOARD_STATE.availableMoves.forEach(move => {
+    cellId = moveToCellId(move);
+    const cellElement = document.getElementById(cellId);
+    cellElement && (cellElement.style.background = HIGHLIGHT_COLOR);
+  });
+
+  // Set previousAvailableMoves to current available moves
+  BOARD_STATE.previousAvailableMoves = BOARD_STATE.availableMoves;
+};
 
 const initBoard = (containerId, quoridorGame) => {
+    BOARD_STATE.containerId = containerId;
+    BOARD_STATE.quoridorGame = quoridorGame;
     const container = document.getElementById(containerId);
     const wallColor = 'Orange';
     const borderColor = 'Red';
     let board = quoridorGame.board;
     let walls = quoridorGame.walls;
+    let availableMoves = quoridorGame.generateMoves();
+    BOARD_STATE.availableMoves = availableMoves;
+
     let htmlBoard = ``;
     /*for (let wallIndex = 1; wallIndex <= 10; wallIndex++) {
       if (this.wallCount[2] >= wallIndex) {
@@ -49,7 +92,7 @@ const initBoard = (containerId, quoridorGame) => {
     for (let y = 9; y > 0; y--) { // For each row from the top
       let row = ''
       Object.keys(board).forEach(x => { // For each column
-        row += cell(board[x][y]);
+        row += cell(board[x][y], moveToCellId({ x, y }));
         if (x !== "i") {
           if (
             (y < 9 && walls[x][y].v) || (y > 1 && walls[x][y - 1].v)
@@ -115,6 +158,28 @@ const initBoard = (containerId, quoridorGame) => {
     htmlBoard += '</table>';
     container.innerHTML = `<table style="width:100%;height:100%;border-collapse:collapse;">${htmlBoard}</table>`
 }
+
+const attemptMove = targetCellId => {
+  hideAvailableMoves();
+  BOARD_STATE.availableMoves.forEach(move => {
+    cellId = moveToCellId(move);
+    if (cellId === targetCellId) {
+      BOARD_STATE.quoridorGame.move(move);
+      initBoard(BOARD_STATE.containerId, BOARD_STATE.quoridorGame);
+    }
+  })
+  updateAvailableMoves();
+};
+
+const handleCellClick = (cellId, piece) => {
+  turn = BOARD_STATE.quoridorGame.turn
+  if (piece === turn) {
+    showAvailableMoves();
+  } else {
+    attemptMove(cellId);
+  }
+}
+
 </script>
 
 <div id="quoridorBoardContainer" style="width:720px;height:720px;">Board failed to load</div>
@@ -123,7 +188,9 @@ const initBoard = (containerId, quoridorGame) => {
     const game = new Quoridor();
     console.log(game)
     game.move({ x: 'e', y: 2, w: 'h' });
+    game.move({ x: 'e', y: 6, w: 'h' });
     console.log(game.ascii());
+    console.log('initBoard: ', initBoard);
     initBoard('quoridorBoardContainer', game);
     
 </script>
