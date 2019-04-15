@@ -16,9 +16,11 @@ let BOARD_STATE = {
   highlightAvailableMoves: false,
   availableMoves: [],
   previousAvailableMoves: [],
+  draggedPiece: undefined,
+  draggedFromCellId: undefined,
 }
 
-const cell = (piece = 0, id) => `<td id="${id}" style="background:${SQUARE_COLOR};color:${piece === 1 ? PLAYER_1_COLOR : PLAYER_2_COLOR};width:10%;height:10%;font-size:373%;text-align:center" onclick="handleCellClick(id, ${piece})">${[1, 2].includes(piece) ? '♟' : '&nbsp;'}</td>`;
+const cell = (piece = 0, id) => `<td id="${id}" style="background:${SQUARE_COLOR};color:${piece === 1 ? PLAYER_1_COLOR : PLAYER_2_COLOR};width:10%;height:10%;font-size:373%;text-align:center" onmousedown="handleOnMouseDown(id, ${piece})" onmouseover="handleOnMouseOver(id)">${[1, 2].includes(piece) ? '♟' : '&nbsp;'}</td>`;
 const verticalCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:1%;height:10%">`;
 const horizontalCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:10%;height:1%">`;
 const miniCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:1%;height:1%">`;
@@ -54,6 +56,7 @@ const showAvailableMoves = () => {
 };
 
 const initBoard = (containerId, quoridorGame) => {
+    console.log('RE-RENDER');
     BOARD_STATE.containerId = containerId;
     BOARD_STATE.quoridorGame = quoridorGame;
     const container = document.getElementById(containerId);
@@ -160,25 +163,94 @@ const initBoard = (containerId, quoridorGame) => {
 }
 
 const attemptMove = targetCellId => {
+  console.log('attemptMove: targetCellId: ', targetCellId);
   hideAvailableMoves();
   BOARD_STATE.availableMoves.forEach(move => {
     cellId = moveToCellId(move);
     if (cellId === targetCellId) {
       BOARD_STATE.quoridorGame.move(move);
+      BOARD_STATE.draggedFromCellId = undefined;
       initBoard(BOARD_STATE.containerId, BOARD_STATE.quoridorGame);
     }
   })
   updateAvailableMoves();
 };
 
-const handleCellClick = (cellId, piece) => {
+const resetDraggedPiece = () => {
+  console.log('resetDraggedPiece');
+  const cellElement = document.getElementById(BOARD_STATE.draggedFromCellId);
+  cellElement && (cellElement.innerHTML = '♟');
+  BOARD_STATE.draggedFromCellId = undefined;
+  BOARD_STATE.draggedPiece = undefined;
+}
+
+const handleOnMouseOver = (cellId) => {
+  BOARD_STATE.currentlyHoveringOver = cellId;
+}
+
+const handleOnMouseDown = (cellId, piece) => {
+  console.log('handleOnMouseDown');
+  console.log('cellId: ', cellId);
+  console.log('piece: ', piece);
+  if ([1, 2].includes(piece)) {
+    BOARD_STATE.draggedFromCellId = cellId;
+    BOARD_STATE.draggedPiece = piece;
+  } else {
+    BOARD_STATE.draggedFromCellId = undefined;
+    BOARD_STATE.draggedPiece = undefined;
+  }
+  console.log('BOARD_STATE: ', BOARD_STATE);
+}
+
+const removeDraggedPiece = () => {
+  const draggedPiece = document.getElementById('draggedPiece');
+  draggedPiece && draggedPiece.remove();
+}
+
+const dragPiece = (event, cellId, piece) => {
   turn = BOARD_STATE.quoridorGame.turn
   if (piece === turn) {
-    showAvailableMoves();
+    removeDraggedPiece();
+    const cellElement = document.getElementById(cellId);
+    cellElement.innerHTML = '&nbsp;';
+    const draggablePiece = document.createElement('div');
+    draggablePiece.setAttribute('id', 'draggedPiece');
+    draggablePiece.style.fontSize = '50px';
+    draggablePiece.style.position = 'absolute';
+    draggablePiece.style.color = piece === 1 ? PLAYER_1_COLOR : PLAYER_2_COLOR;
+    draggablePiece.style.left = `${event.clientX}px`;
+    draggablePiece.style.top = `${event.clientY}px`;
+    draggablePiece.innerHTML = '♟';
+    document.body.appendChild(draggablePiece);
   } else {
     attemptMove(cellId);
   }
 }
+
+document.addEventListener('mousemove', event => {
+  if (BOARD_STATE.draggedPiece) {
+    console.log('BOARD_STATE.draggedPiece: ', BOARD_STATE.draggedPiece);
+    console.log('event: ', event);
+    dragPiece(event, BOARD_STATE.draggedFromCellId, BOARD_STATE.draggedPiece);
+  }
+})
+
+document.addEventListener('mouseup', event => {
+  console.log('mouseup');
+  removeDraggedPiece();
+  const turn = BOARD_STATE.quoridorGame.turn;
+  const piece = BOARD_STATE.draggedPiece;
+  const currentlyHoveringOver = BOARD_STATE.currentlyHoveringOver;
+  const draggedFromCellId = BOARD_STATE.draggedFromCellId;
+  console.log('currentlyHoveringOver: ', currentlyHoveringOver);
+  console.log('draggedFromCellId: ', draggedFromCellId);
+  if (piece === turn && currentlyHoveringOver === draggedFromCellId) {
+    showAvailableMoves();
+  } else {
+    attemptMove(BOARD_STATE.currentlyHoveringOver);
+  }
+  resetDraggedPiece();
+})
 
 </script>
 
