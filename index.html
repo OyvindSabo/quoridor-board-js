@@ -159,7 +159,7 @@ const initBoard = (containerId, quoridorGame) => {
       }
     }*/
     htmlBoard += '</table>';
-    container.innerHTML = `<table style="width:100%;height:100%;border-collapse:collapse;">${htmlBoard}</table>`
+    container.innerHTML = `<table style="width:100%;height:100%;border-collapse:collapse;user-select:none;">${htmlBoard}</table>`
 }
 
 const attemptMove = targetCellId => {
