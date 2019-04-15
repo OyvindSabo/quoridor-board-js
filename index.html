@@ -1,0 +1,53 @@
+<script src='../quoridor-js/quoridor.js'></script>
+
+</script>
+
+<script>
+const cell = (piece = 0) => `<td style="background:Brown;color:${piece === 1 ? 'white' : 'black'};width:10%;height:10%;">${[1, 2].includes(piece) ? '♟' : '&nbsp;'}</td>`;
+const verticalCell = (wall = false) => `<td style="background:DarkGray;width:1%;height:10%">`;
+const horizontalCell = (wall = false) => `<td style="background:DarkGray;width:10%;height:1%">`;
+const miniCell = (wall = false) => `<td style="background:DarkGray;width:1%;height:1%">`;
+const row = content => `<tr>${content}</tr>`
+
+const rowBetweenRows = content => `<tr>${content}</tr>`
+
+const initBoard = (containerId, quoridorGame) => {
+  const container = document.getElementById(containerId);
+  const board = `<table style="width:100%;height:100%;border-collapse:collapse;">
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+    ${row(`${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}`)}
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+    ${row(`${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}`)}
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+    ${row(`${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}`)}
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+    ${row(`${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}`)}
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+    ${row(`${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}`)}
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+    ${row(`${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}`)}
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+    ${row(`${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}`)}
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+    ${row(`${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}${miniCell(1)}${horizontalCell(1)}`)}
+    ${row(`${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}${verticalCell(1)}${cell(1)}`)}
+  </table>`
+/*  
+  <table>
+    <tr>
+      <td></td>
+    </tr>
+  </table>*/
+  container.innerHTML = board;
+}
+</script>
+
+<div id="quoridorBoardContainer" style="width:720px;height:720px;">Board failed to load</div>
+
+<script>
+    const game = new Quoridor();
+    console.log(game)
+    console.log(game.board);
+    initBoard('quoridorBoardContainer', game);
+    
+</script>
