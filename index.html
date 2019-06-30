@@ -21,8 +21,8 @@ let BOARD_STATE = {
 }
 
 const cell = (piece = 0, id) => `<td id="${id}" style="background:${SQUARE_COLOR};color:${piece === 1 ? PLAYER_1_COLOR : PLAYER_2_COLOR};width:10%;height:10%;font-size:373%;text-align:center" onmousedown="handleOnMouseDown(id, ${piece})" onmouseover="handleOnMouseOver(id)">${[1, 2].includes(piece) ? '♟' : '&nbsp;'}</td>`;
-const verticalCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:1%;height:10%">`;
-const horizontalCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:10%;height:1%">`;
+const verticalCell = (piece = 0, id, wall = false) => `<td id="${id}" style="background:${wall ? WALL_COLOR : BASE_COLOR};width:1%;height:10%" onclick="attemptMove(id)">`;
+const horizontalCell = (piece = 0, id, wall = false) => `<td id="${id}" style="background:${wall ? WALL_COLOR : BASE_COLOR};width:10%;height:1%" onclick="attemptMove(id)">`;
 const miniCell = (wall = false) => `<td style="background:${wall ? WALL_COLOR : BASE_COLOR};width:1%;height:1%">`;
 const row = content => `<tr>${content}</tr>`
 const moveToCellId = move => '' + move.x + move.y + (move.w ? move.w : '');
@@ -100,9 +100,9 @@ const initBoard = (containerId, quoridorGame) => {
           if (
             (y < 9 && walls[x][y].v) || (y > 1 && walls[x][y - 1].v)
           ) {
-            row += verticalCell(true); // wall = true
+            row += verticalCell(board[x][y], moveToCellId({x, y, w: 'v'}), true); // wall = true
           } else if (x !== "i") {
-            row += verticalCell();
+            row += verticalCell(board[x][y], moveToCellId({x, y, w: 'v'}));
           }
         }
       });
@@ -115,15 +115,13 @@ const initBoard = (containerId, quoridorGame) => {
             ((x !== "i" && walls[x][y - 1].h) ||
               (x !== "a" && walls[array[index - 1]][y - 1].h))
           ) {
-            row += horizontalCell(true); // wall = true;
+            row += horizontalCell(board[x][y], moveToCellId({x, y: y - 1, w: 'h'}), true); // wall = true;
           } else {
-            row += horizontalCell();
+            row += horizontalCell(board[x][y], moveToCellId({x, y: y - 1, w: 'h'}));
           }
           if (x !== "i") {
-            if (x !== "i" && y < 9 && walls[x][y - 1].h) {
+            if ((x !== "i" && y < 9 && walls[x][y - 1].h) || (y > 1 && walls[x][y - 1].v)) {
               row += miniCell(true); // wall = true;
-            } else if (y > 1 && walls[x][y - 1].v) {
-              row += verticalCell(true);
             } else {
               row += miniCell();
             }
